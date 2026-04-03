@@ -1,0 +1,24 @@
+mport pandas as pd
+import re
+import nltk
+from nltk.corpus import stopwords
+
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+
+def clean_text(text):
+    text = str(text)
+    text = re.sub(r'<.*?>', '', text)
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
+
+data = pd.read_csv("imdb_dataset.csv")
+data = data.dropna(subset=["review", "sentiment"])
+data["review"] = data["review"].apply(clean_text)
+data["label"] = data["sentiment"].map({"negative": 0, "positive": 1})
+data = data[["review", "label"]]
+
+print(data.head())
+print("\nLabel Distribution:\n", data["label"].value_counts())
+print("\nData Info:")
+print(data.info())
